@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+import yfinance as yf
+import datetime as dt
+from pandas_datareader import data as pdr
+
+yf.pdr_override()
+
+stock = input ("Please enter the Ticker symbol and press an ENTER after that : ")
+print(stock)
+
+#Lets us customize the initial Date also.
+startyear = int (input ("Please enter the Initial Year: "))
+print (startyear)
+
+startmonth = int(input ("Please enter the Initial Month: "))
+print (startmonth)
+
+startday = int(input ("Please enter the Initial Day: "))
+print (startday)
+
+start =dt.datetime(startyear,startmonth,startday)
+print ("Ok then we will start the analysis from ", start)
+
+now = dt.datetime.now()
+print ("Ok then we will analyze till ", now)
+
+df = pdr.get_data_yahoo(stock,start,now)
+print (df)
+
+print ("let us find the moving average")
+
+ma=50
+smaString="Sma_"+str(ma)
+#print (smaString)
+
+df[smaString]=df.iloc[:,4].rolling(window=ma).mean()
+#print (df)
+
+df = df.iloc[ma:]
+print (df)
+
+#for i in df.index:
+#    print (df.iloc[:,4][i])
+
+
+for i in df.index:
+    if(df["Adj Close"][i]>df[smaString][i]):
+        print ("Adjusted Close is greater for the day", i,"and the price is ", df["Adj Close"][i])
+    else:
+        print("50 day moving average is greater for", i,"and the 50 day moving average is", df[smaString][i], "however the adjusted close is only ", df["Adj Close"][i] )
